@@ -26,7 +26,12 @@ const app = initializeApp(firebaseConfig);
 
 const db = getFirestore(app);
 
-const materialCollection = collection(db,"materials");
+import { query, orderBy } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
+
+const materialCollection = query(
+collection(db,"materials"),
+orderBy("order")
+);
 
 export{
 db,
