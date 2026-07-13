@@ -108,10 +108,10 @@ grand+=total;
 body.innerHTML+=`
 <tr>
 <td>${index+1}</td>
-<td><input type="checkbox" ${m.checked?"checked":""} oninput="toggleCheck('${m.id}',this.checked)"></td>
-<td><input type="text" value="${m.name}" oninput="changeName('${m.id}',this.value)"></td>
-<td><input type="number" value="${m.cost}" oninput="changeCost('${m.id}',this.value)"></td>
-<td><input type="number" value="${m.qty}" oninput="changeQty('${m.id}',this.value)"></td>
+<td><input type="checkbox" ${m.checked?"checked":""} onchange="toggleCheck('${m.id}',this.checked)"></td>
+<td><input type="text" value="${m.name}" onchange="changeName('${m.id}',this.value)"></td>
+<td><input type="number" value="${m.cost}" onchange="changeCost('${m.id}',this.value)"></td>
+<td><input type="number" value="${m.qty}" onchange="changeQty('${m.id}',this.value)"></td>
 <td>₹ ${total}</td>
 <td><button class="deleteBtn" onclick="deleteItem('${m.id}')">❌</button></td>
 </tr>
