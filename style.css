@@ -9,7 +9,7 @@ body{
 background:linear-gradient(-45deg,#ff1744,#ff9800,#00c853,#2979ff,#9c27b0);
 background-size:400% 400%;
 animation:bg 12s ease infinite;
-padding:12px;
+padding:10px;
 min-height:100vh;
 }
 
@@ -22,17 +22,17 @@ min-height:100vh;
 header{
 background:rgba(255,255,255,.18);
 backdrop-filter:blur(15px);
-border-radius:18px;
 padding:18px;
+border-radius:18px;
 text-align:center;
 color:#fff;
 margin-bottom:15px;
-box-shadow:0 8px 20px rgba(0,0,0,.25);
+box-shadow:0 6px 20px rgba(0,0,0,.3);
 }
 
 header h1{
 font-size:28px;
-margin-bottom:5px;
+margin-bottom:6px;
 }
 
 header p{
@@ -45,20 +45,22 @@ backdrop-filter:blur(15px);
 padding:12px;
 border-radius:18px;
 overflow-x:auto;
+width:100%;
 }
 
 #search{
 width:100%;
 padding:12px;
+font-size:15px;
 border:none;
 border-radius:10px;
-font-size:15px;
 margin-bottom:12px;
 outline:none;
 }
 
 table{
 width:100%;
+min-width:720px;
 border-collapse:collapse;
 background:#fff;
 border-radius:10px;
@@ -68,30 +70,33 @@ overflow:hidden;
 th{
 background:#1565c0;
 color:#fff;
-padding:8px;
-font-size:13px;
+padding:10px;
+font-size:14px;
+white-space:nowrap;
 }
 
 td{
-padding:6px;
-font-size:12px;
+padding:8px;
+font-size:13px;
 text-align:center;
 border-bottom:1px solid #ddd;
+white-space:nowrap;
 }
 
 tr:nth-child(even){
-background:#f7f7f7;
+background:#f8f8f8;
 }
 
 input[type=text]{
-width:160px;
-padding:6px;
+width:220px;
+padding:8px;
 border:1px solid #bbb;
 border-radius:6px;
+font-size:14px;
 }
 
 input[type=number]{
-width:60px;
+width:65px;
 padding:6px;
 border:1px solid #bbb;
 border-radius:6px;
@@ -104,17 +109,18 @@ cursor:pointer;
 }
 
 .deleteBtn{
-background:#e53935;
-color:white;
+background:#d50000;
+color:#fff;
 border:none;
-padding:6px 10px;
+padding:8px 12px;
 border-radius:8px;
-font-size:15px;
+font-size:16px;
+font-weight:bold;
 cursor:pointer;
 }
 
 .deleteBtn:hover{
-background:#b71c1c;
+background:#8b0000;
 }
 
 .bottom{
@@ -128,14 +134,13 @@ gap:12px;
 background:#fff;
 padding:15px;
 border-radius:12px;
+text-align:center;
 font-size:22px;
 font-weight:bold;
-text-align:center;
 color:#d50000;
 }
 
 #addBtn{
-width:100%;
 padding:14px;
 border:none;
 border-radius:12px;
@@ -152,23 +157,31 @@ background:#009624;
 
 @media(max-width:768px){
 
+body{
+padding:6px;
+}
+
 header h1{
 font-size:22px;
 }
 
-th,td{
-font-size:11px;
-padding:5px;
+table{
+min-width:700px;
 }
 
 input[type=text]{
-width:120px;
-font-size:11px;
+width:180px;
+font-size:12px;
 }
 
 input[type=number]{
-width:50px;
-font-size:11px;
+width:55px;
+font-size:12px;
+}
+
+th,td{
+font-size:12px;
+padding:6px;
 }
 
 }
