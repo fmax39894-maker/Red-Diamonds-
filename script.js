@@ -14,7 +14,8 @@ const body=document.getElementById("body");
 const search=document.getElementById("search");
 const addBtn=document.getElementById("addBtn");
 
-// ---------- Default Materials ----------
+// ---------------- DEFAULT MATERIALS ----------------
+
 const defaults=[
 
 {name:"9V Water Pump",qty:2,cost:0,checked:false},
@@ -59,16 +60,23 @@ const defaults=[
 
 ];
 
-// ---------- Live Sync ----------
+// ---------------- LIVE SYNC ----------------
+
 onSnapshot(materialCollection,async(snapshot)=>{
 
 materials=[];
 
 if(snapshot.empty){
 
-for(const item of defaults){
+for(let i=0;i<defaults.length;i++){
 
-await addDoc(materialCollection,item);
+await addDoc(materialCollection,{
+
+...defaults[i],
+
+order:i+1
+
+});
 
 }
 
@@ -88,11 +96,14 @@ id:d.id,
 
 });
 
+// Sort by order so new items always appear last
+materials.sort((a,b)=>(a.order||0)-(b.order||0));
+
 renderTable();
 
 });
+// ---------------- RENDER TABLE ----------------
 
-// ---------- Render Table ----------
 function renderTable(){
 
 body.innerHTML="";
@@ -106,15 +117,50 @@ let total=(Number(m.cost)||0)*(Number(m.qty)||0);
 grand+=total;
 
 body.innerHTML+=`
+
 <tr>
+
 <td>${index+1}</td>
-<td><input type="checkbox" ${m.checked?"checked":""} onchange="toggleCheck('${m.id}',this.checked)"></td>
-<td><input type="text" value="${m.name}" onchange="changeName('${m.id}',this.value)"></td>
-<td><input type="number" value="${m.cost}" onchange="changeCost('${m.id}',this.value)"></td>
-<td><input type="number" value="${m.qty}" onchange="changeQty('${m.id}',this.value)"></td>
+
+<td>
+<input type="checkbox"
+${m.checked?"checked":""}
+onchange="toggleCheck('${m.id}',this.checked)">
+</td>
+
+<td>
+<input
+type="text"
+value="${m.name}"
+onchange="changeName('${m.id}',this.value)">
+</td>
+
+<td>
+<input
+type="number"
+value="${m.cost}"
+onchange="changeCost('${m.id}',this.value)">
+</td>
+
+<td>
+<input
+type="number"
+value="${m.qty}"
+onchange="changeQty('${m.id}',this.value)">
+</td>
+
 <td>₹ ${total}</td>
-<td><button class="deleteBtn" onclick="deleteItem('${m.id}')">❌</button></td>
+
+<td>
+<button
+class="deleteBtn"
+onclick="deleteItem('${m.id}')">
+❌
+</button>
+</td>
+
 </tr>
+
 `;
 
 });
@@ -122,51 +168,59 @@ body.innerHTML+=`
 document.getElementById("grandTotal").innerHTML=grand;
 
 }
-// ---------- Update Functions ----------
 
-window.changeName = async function(id,value){
+// ---------------- UPDATE FUNCTIONS ----------------
 
-const ref = doc(db,"materials",id);
+window.changeName=async function(id,value){
 
-await updateDoc(ref,{
+await updateDoc(doc(db,"materials",id),{
+
 name:value
+
 });
 
 };
 
-window.changeCost = async function(id,value){
+window.changeCost=async function(id,value){
 
-const ref = doc(db,"materials",id);
+await updateDoc(doc(db,"materials",id),{
 
-await updateDoc(ref,{
 cost:Number(value)||0
+
 });
 
 };
 
-window.changeQty = async function(id,value){
+window.changeQty=async function(id,value){
 
-const ref = doc(db,"materials",id);
+await updateDoc(doc(db,"materials",id),{
 
-await updateDoc(ref,{
 qty:Number(value)||0
+
 });
 
 };
 
-window.toggleCheck = async function(id,value){
+window.toggleCheck=async function(id,value){
 
-const ref = doc(db,"materials",id);
+await updateDoc(doc(db,"materials",id),{
 
-await updateDoc(ref,{
 checked:value
+
 });
 
 };
-
-// ---------- Add Item ----------
+// ---------------- ADD ITEM ----------------
 
 addBtn.addEventListener("click",async()=>{
+
+let nextOrder=1;
+
+if(materials.length>0){
+
+nextOrder=Math.max(...materials.map(m=>m.order||0))+1;
+
+}
 
 await addDoc(materialCollection,{
 
@@ -176,25 +230,25 @@ cost:0,
 
 qty:1,
 
-checked:false
+checked:false,
+
+order:nextOrder
 
 });
 
 });
 
-// ---------- Delete Item ----------
+// ---------------- DELETE ITEM ----------------
 
-window.deleteItem = async function(id){
+window.deleteItem=async function(id){
 
 if(!confirm("Delete this item?")) return;
 
-const ref = doc(db,"materials",id);
-
-await deleteDoc(ref);
+await deleteDoc(doc(db,"materials",id));
 
 };
 
-// ---------- Search ----------
+// ---------------- SEARCH ----------------
 
 search.addEventListener("input",function(){
 
@@ -209,3 +263,32 @@ row.style.display=row.innerText.toLowerCase().includes(text)
 });
 
 });
+
+// ---------------- AUTO FIX ORDER ----------------
+
+async function fixOrder(){
+
+for(let i=0;i<materials.length;i++){
+
+if(materials[i].order!==i+1){
+
+await updateDoc(
+
+doc(db,"materials",materials[i].id),
+
+{
+
+order:i+1
+
+}
+
+);
+
+}
+
+}
+
+}
+
+// Run once after data loads
+setTimeout(fixOrder,2000);
