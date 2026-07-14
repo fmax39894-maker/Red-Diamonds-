@@ -1,5 +1,6 @@
 import {
 db,
+materialsRef,
 materialCollection,
 addDoc,
 updateDoc,
@@ -17,7 +18,6 @@ const addBtn=document.getElementById("addBtn");
 // ---------------- DEFAULT MATERIALS ----------------
 
 const defaults=[
-
 {name:"9V Water Pump",qty:2,cost:0,checked:false},
 {name:"L Pipe",qty:3,cost:0,checked:false},
 {name:"9V Gear Motor",qty:2,cost:0,checked:false},
@@ -60,9 +60,9 @@ const defaults=[
 
 ];
 
-// ---------------- LIVE SYNC ----------------
+// ---------------- FIRESTORE LIVE SYNC ----------------
 
-onSnapshot(materialCollection,async(snapshot)=>{
+onSnapshot(materialCollection, async(snapshot)=>{
 
 materials=[];
 
@@ -70,7 +70,7 @@ if(snapshot.empty){
 
 for(let i=0;i<defaults.length;i++){
 
-await addDoc(materialCollection,{
+await addDoc(materialsRef,{
 
 ...defaults[i],
 
@@ -96,9 +96,6 @@ id:d.id,
 
 });
 
-// Sort by order so new items always appear last
-materials.sort((a,b)=>(a.order||0)-(b.order||0));
-
 renderTable();
 
 });
@@ -112,7 +109,7 @@ let grand=0;
 
 materials.forEach((m,index)=>{
 
-let total=(Number(m.cost)||0)*(Number(m.qty)||0);
+const total=(Number(m.cost)||0)*(Number(m.qty)||0);
 
 grand+=total;
 
@@ -123,7 +120,8 @@ body.innerHTML+=`
 <td>${index+1}</td>
 
 <td>
-<input type="checkbox"
+<input
+type="checkbox"
 ${m.checked?"checked":""}
 onchange="toggleCheck('${m.id}',this.checked)">
 </td>
@@ -139,6 +137,7 @@ onchange="changeName('${m.id}',this.value)">
 <input
 type="number"
 value="${m.cost}"
+min="0"
 onchange="changeCost('${m.id}',this.value)">
 </td>
 
@@ -146,6 +145,7 @@ onchange="changeCost('${m.id}',this.value)">
 <input
 type="number"
 value="${m.qty}"
+min="0"
 onchange="changeQty('${m.id}',this.value)">
 </td>
 
@@ -165,73 +165,29 @@ onclick="deleteItem('${m.id}')">
 
 });
 
-document.getElementById("grandTotal").innerHTML=grand;
+document.getElementById("grandTotal").textContent=grand;
 
 }
-
-// ---------------- UPDATE FUNCTIONS ----------------
-
-window.changeName=async function(id,value){
-
-await updateDoc(doc(db,"materials",id),{
-
-name:value
-
-});
-
-};
-
-window.changeCost=async function(id,value){
-
-await updateDoc(doc(db,"materials",id),{
-
-cost:Number(value)||0
-
-});
-
-};
-
-window.changeQty=async function(id,value){
-
-await updateDoc(doc(db,"materials",id),{
-
-qty:Number(value)||0
-
-});
-
-};
-
-window.toggleCheck=async function(id,value){
-
-await updateDoc(doc(db,"materials",id),{
-
-checked:value
-
-});
-
-};
 // ---------------- ADD ITEM ----------------
 
-addBtn.addEventListener("click",async()=>{
+addBtn.addEventListener("click", async ()=>{
 
-let nextOrder=1;
+let nextOrder = 1;
 
 if(materials.length>0){
 
-nextOrder=Math.max(...materials.map(m=>m.order||0))+1;
+nextOrder = Math.max(
+...materials.map(m=>m.order||0)
+)+1;
 
 }
 
-await addDoc(materialCollection,{
+await addDoc(materialsRef,{
 
 name:"New Item",
-
 cost:0,
-
 qty:1,
-
 checked:false,
-
 order:nextOrder
 
 });
@@ -240,11 +196,14 @@ order:nextOrder
 
 // ---------------- DELETE ITEM ----------------
 
-window.deleteItem=async function(id){
+window.deleteItem = async function(id){
 
-if(!confirm("Delete this item?")) return;
+if(!confirm("Delete this item?"))
+return;
 
-await deleteDoc(doc(db,"materials",id));
+await deleteDoc(
+doc(db,"materials",id)
+);
 
 };
 
@@ -252,43 +211,15 @@ await deleteDoc(doc(db,"materials",id));
 
 search.addEventListener("input",function(){
 
-let text=this.value.toLowerCase();
+const text=this.value.toLowerCase();
 
 document.querySelectorAll("#body tr").forEach(row=>{
 
-row.style.display=row.innerText.toLowerCase().includes(text)
+row.style.display=
+row.innerText.toLowerCase().includes(text)
 ? ""
 : "none";
 
 });
 
 });
-
-// ---------------- AUTO FIX ORDER ----------------
-
-async function fixOrder(){
-
-for(let i=0;i<materials.length;i++){
-
-if(materials[i].order!==i+1){
-
-await updateDoc(
-
-doc(db,"materials",materials[i].id),
-
-{
-
-order:i+1
-
-}
-
-);
-
-}
-
-}
-
-}
-
-// Run once after data loads
-setTimeout(fixOrder,2000);
