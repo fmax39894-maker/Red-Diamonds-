@@ -225,14 +225,48 @@ row.innerText.toLowerCase().includes(text)
 });
 
 });
-saveBtn.addEventListener("click",()=>{
+// ---------------- UPDATE FUNCTIONS ----------------
 
-document.querySelectorAll("input").forEach(input=>{
+window.changeName = async function(id,value){
 
-input.blur();
+await updateDoc(
+doc(db,"materials",id),
+{
+name:value
+}
+);
 
-});
+};
 
-alert("✅ Changes Saved");
+window.changeCost = async function(id,value){
 
-});
+await updateDoc(
+doc(db,"materials",id),
+{
+cost:Number(value)||0
+}
+);
+
+};
+
+window.changeQty = async function(id,value){
+
+await updateDoc(
+doc(db,"materials",id),
+{
+qty:Number(value)||0
+}
+);
+
+};
+
+window.toggleCheck = async function(id,value){
+
+await updateDoc(
+doc(db,"materials",id),
+{
+checked:value
+}
+);
+
+};
