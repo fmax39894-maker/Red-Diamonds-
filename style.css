@@ -184,4 +184,25 @@ font-size:12px;
 padding:6px;
 }
 
+#saveBtn{
+position:fixed;
+right:20px;
+bottom:20px;
+width:60px;
+height:60px;
+border:none;
+border-radius:50%;
+background:#00c853;
+color:white;
+font-size:28px;
+font-weight:bold;
+box-shadow:0 4px 12px rgba(0,0,0,.35);
+cursor:pointer;
+z-index:999;
+}
+
+#saveBtn:hover{
+background:#009624;
+}
+
 }
