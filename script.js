@@ -15,6 +15,8 @@ const body=document.getElementById("body");
 const search=document.getElementById("search");
 const addBtn=document.getElementById("addBtn");
 
+const saveBtn=document.getElementById("saveBtn");
+
 // ---------------- DEFAULT MATERIALS ----------------
 
 const defaults=[
@@ -221,5 +223,12 @@ row.innerText.toLowerCase().includes(text)
 : "none";
 
 });
+
+});
+saveBtn.addEventListener("click",()=>{
+
+location.reload();
+
+alert("✅ Changes Saved");
 
 });
