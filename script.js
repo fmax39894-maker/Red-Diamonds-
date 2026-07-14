@@ -227,7 +227,11 @@ row.innerText.toLowerCase().includes(text)
 });
 saveBtn.addEventListener("click",()=>{
 
-location.reload();
+document.querySelectorAll("input").forEach(input=>{
+
+input.blur();
+
+});
 
 alert("✅ Changes Saved");
 
